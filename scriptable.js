@@ -10,6 +10,8 @@ const apiUrlStates =
 
 const rkiUrlForVaccinationData = 'https://rki-vaccination-data.vercel.app/api'
 
+const rkiUrlForInfectionData = 'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/rki_key_data_hubv/FeatureServer/0?f=pjson'
+
 const widget = await createWidget()
 if (!config.runsInWidget) {
   await widget.presentSmall()
@@ -20,12 +22,13 @@ Script.complete()
 async function createWidget (items) {
   const data = await getData()
   const vaccinatedInfo = await getTotalNumberOfVaccinatedPeople()
-
+  const infectedInfo = await getTotalNumberOfInfectedPeople()
   const list = new ListWidget()
-  const header = list.addText('🦠 Inzidenz'.toUpperCase())
+  const header = list.addText('🦠 Return to normal'.toUpperCase())
   header.font = Font.mediumSystemFont(13)
   if (vaccinatedInfo) {
     list.addSpacer()
+    list.addText('TotalInfected: ' + infectedInfo.AnzFall)
     list.addText('Number of Vaccinated: ' + vaccinatedInfo.vaccinated)
   }
 
@@ -61,6 +64,14 @@ async function createWidget (items) {
 async function getTotalNumberOfVaccinatedPeople () {
   try {
     return await new Request(rkiUrlForVaccinationData).loadJSON()
+  } catch (e) {
+    null
+  }
+}
+
+async function getTotalNumberOfInfectedPeople () {
+  try {
+    return await new Request(rkiUrlForInfectionData).loadJSON()
   } catch (e) {
     null
   }
